@@ -1,15 +1,20 @@
-from methodSpec import MethodSpec
+from AnnotationSpec import AnnotationSpec
+from MethodSpec import MethodSpec
+from PythonFile import PythonFile
+from TypeSpec import TypeSpec
 
-test = MethodSpec()
-MethodSpec.Builder("methodName1")
-test.Builder.addParameter("parameter1")
-test.Builder.addStatement("a=1")
-test.Builder.build()
+method_name = 'service_name'
+app_name = 'app'
+url = 'adsfdgda'
+package_name = 'selab'
+className = "controller"
+output_directory = 'outputpath'
 
-print("===========================")
+methodspec = MethodSpec.method_builder(method_name)\
+    .add_annotation(AnnotationSpec.builder(app_name).add_url_member(url).build())\
+    .build()
+type_spec = TypeSpec.class_builder(className).add_method(methodspec).build()
 
-test2 = MethodSpec()
-MethodSpec.Builder("methodName2")
-test2.Builder.addParameter("parameter2")
-test2.Builder.addStatement("a=2")
-test2.Builder.build()
+pythonfile = PythonFile.builder(package_name, type_spec).build()
+
+pythonfile.write_to(output_directory)
