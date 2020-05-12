@@ -19,7 +19,9 @@ class CodeBlock:
     def is_empty(self):
         return not self.format_parts
 
-
+    def of(self, format, args):
+        builder = Builder()
+        return builder.add(format, args).build()
 class Builder:
     format_parts = list()
     args = list()
@@ -33,4 +35,7 @@ class Builder:
         return self
 
     def add_statement(self, code_block):
+        return self
+
+    def add(self, format, args):
         return self

@@ -1,4 +1,7 @@
-from LineWrapper import LineWrapper
+from typing import overload
+
+from CodeBlock import CodeBlock
+from multipledispatch import dispatch
 
 
 class CodeWriter:
@@ -46,10 +49,10 @@ class CodeWriter:
         finally:
             comment = False
 
-    def emit_python_doc(self):
+    def emit_python_doc(self, pythondoc):
         print()
 
-    def emit_annotation(self):
+    def emit_annotation(self, annotations, in_line):
         print()
 
     def emit_modifiers(self):
@@ -58,8 +61,27 @@ class CodeWriter:
     def emit_type_variables(self):
         print()
 
-    def emit(self, code_block):
+    @dispatch(str, list)
+    def emit(self, format, args):
         print()
+        return self.emit(CodeBlock.of(format, args))
+
+    @dispatch(str)
+    def emit(self, s: str):
+        return self.emit_and_indent(s)
+
+    @dispatch(CodeBlock)
+    def emit(self, code_block):
+        a = 0
+        deferred_type_name = None  # used by "import static" logic
+        part_iterator = iter(code_block.format_parts)
+        while part_iterator.__next__():
+            part = next(part_iterator)
+            if part == "$L":
+                print()
+            elif part == "$N":
+                print()
+        return self
 
     def emit_wrapping_space(self):
         print()
@@ -85,8 +107,9 @@ class CodeWriter:
     def stack_class_name(self):
         print()
 
-    def emit_and_indent(self):
+    def emit_and_indent(self, s):
         print()
+        return self
 
     def emit_indentation(self):
         print()
