@@ -2,7 +2,6 @@ from CodeBlock import CodeBlock
 from CodeWriter import CodeWriter
 from TypeSpec import TypeSpec
 from Util import Util
-from typing import overload
 
 class PythonFile:
     # file_comment = CodeBlock
