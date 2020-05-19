@@ -34,7 +34,6 @@ class PythonFile:
     def write_to(self):
         writer = open("Controller.py", 'w')
 
-
         import_collector = CodeWriter(PythonFile.NULL_APPENDABLE, self.indent, self.static_imports, None)
         self.emit(import_collector)
         suggested_imports = import_collector.suggested_imports()
