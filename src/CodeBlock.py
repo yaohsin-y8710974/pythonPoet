@@ -22,6 +22,8 @@ class CodeBlock:
     def of(self, format, args):
         builder = Builder()
         return builder.add(format, args).build()
+
+
 class Builder:
     format_parts = list()
     args = list()

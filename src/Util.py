@@ -18,3 +18,11 @@ class Util:
     @staticmethod
     def immutable_multimap(cls):
         pass
+
+    @staticmethod
+    def string_literal_with_double_quotes(cls, value, indent):
+        pass
+
+    @staticmethod
+    def check_state(condition, format, *args):
+        pass
