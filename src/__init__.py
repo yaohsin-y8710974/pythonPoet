@@ -3,14 +3,14 @@ from MethodSpec import MethodSpec
 from PythonFile import PythonFile
 from TypeSpec import TypeSpec
 
-method_name = 'service_name'
+method_name = 'controller'
 app_name = 'app'
 url = 'service_url'
 package_name = 'selab'
 className = "controller"
 
-methodspec = MethodSpec.method_builder(method_name)\
-    .add_annotation(AnnotationSpec.builder(app_name).add_url_member(url).build())\
+methodspec = MethodSpec.method_builder(method_name) \
+    .add_annotation(AnnotationSpec.builder(app_name).add_url_member(url).build()) \
     .build()
 type_spec = TypeSpec.class_builder(className).add_method(methodspec).build()
 

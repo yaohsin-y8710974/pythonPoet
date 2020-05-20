@@ -1,5 +1,4 @@
 from CodeBlock import CodeBlock
-from Util import Util
 
 
 class AnnotationSpec:
@@ -25,8 +24,6 @@ class Builder:
             self.type = 'route'
 
     def add_url_member(self, url):  # add url here
-        # Util.check_not_null()
-        # Util.check_argument()
         codeblock = CodeBlock.add_url(url)
         return self
 

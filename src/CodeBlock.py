@@ -3,8 +3,8 @@ from Util import Util
 
 class CodeBlock:
     def __init__(self, builder):
-        self.format_parts = Util.immutable_list(builder.format_parts)
-        self.args = Util.immutable_list(builder.args)
+        self.format_parts = builder.format_parts  # self.format_parts = Util.immutable_list(builder.format_parts)
+        self.args = builder.args  # self.args = Util.immutable_list(builder.args)
 
     @staticmethod
     def builder():  # done

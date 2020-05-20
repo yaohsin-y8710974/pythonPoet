@@ -22,6 +22,7 @@ class MethodSpec:
         self.default_value = builder.default_value
         self.code = code
 
+    @staticmethod
     def method_builder(method_name):  # done
         builder = Builder(method_name)
         return builder

@@ -6,12 +6,12 @@ from Util import Util
 class TypeSpec:
     def __init__(self, builder):
         self.pythondoc = builder.pythondoc.build()
-        self.annotations = Util.immutable_list(builder.annotations)
+        self.annotations = builder.annotations  # self.annotations = Util.immutable_list(builder.annotations)
         self.anonymous_type_arguments = builder.anonymous_type_arguments
-        self.field_specs = Util.immutable_list(builder.field_specs)
+        self.field_specs = builder.field_specs  # self.field_specs = Util.immutable_list(builder.field_specs)
         self.method_specs = builder.method_specs  # self.method_specs = Util.immutable_list(builder.method_specs)
         self.type_specs = builder.type_specs  # self.type_specs = Util.immutable_list(builder.type_specs)
-        self.superinterfaces = Util.immutable_list(builder.superinterfaces)
+        self.superinterfaces = builder.superinterfaces  # self.superinterfaces = Util.immutable_list(builder.superinterfaces)
         self.superclass = builder.superinterfaces
         self.name = builder.name
         self.type_variables = set()

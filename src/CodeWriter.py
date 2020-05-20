@@ -111,9 +111,28 @@ class CodeWriter:
 
     def emit_type_variables(self, type_variables):
         print()
+        # if not type_variables:
+        #     return
+        #
+        # self.emit("<")
+        # first_type_variable = True
+        # for type_variable in type_variables:
+        #     if not first_type_variable:
+        #         self.emit(", ")
+        #     self.emit_annotations(type_variable.annotations, True)
+        #     self.emit("$L", type_variable.name)
+        #     first_bound = True
+        #     for bound in type_variable.bounds:
+        #         if first_bound is True:
+        #             self.emit("extends $T", bound)
+        #         else:
+        #             self.emit(" & $T", bound)
+        #         first_bound = False
+        #     first_type_variable = False
+        # self.emit(">")
 
     @dispatch(str, list)
-    def emit(self, format, args):
+    def emit(self, format, *args):
         print()
         return self.emit(CodeBlock.of(format, args))
 
@@ -171,27 +190,13 @@ class CodeWriter:
         return self
 
     def emit_wrapping_space(self):
-        print()
-
-    def extract_member_name(self):
-        print()
+        self.out.wrapping_space(self.indent_level + 2)
+        return self
 
     def emit_static_import_member(self):
         print()
 
     def emit_literal(self):
-        print()
-
-    def lookup_name(self):
-        print()
-
-    def importable_type(self):
-        print()
-
-    def resolve(self):
-        print()
-
-    def stack_class_name(self):
         print()
 
     def emit_and_indent(self, s):

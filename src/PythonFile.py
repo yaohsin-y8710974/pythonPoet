@@ -1,5 +1,3 @@
-import os
-
 from CodeBlock import CodeBlock
 from CodeWriter import CodeWriter
 from TypeSpec import TypeSpec
@@ -25,6 +23,7 @@ class PythonFile:
         self.static_imports = builder.static_imports  # self.static_imports = Util.immutable_set(builder.static_imports)
         self.indent = builder.indent
 
+    @staticmethod
     def builder(package_name, type_spec):  # done
         Util.check_not_null(package_name, "package_name == null")
         Util.check_not_null(type_spec, "type_spec == null")
