@@ -7,13 +7,11 @@ from Util import Util
 
 class PythonFile:
     file_comment = CodeBlock
-    package_name = ""
+    package_name = str()
     type_spec = TypeSpec
-    skip_python_imports = bool
+    skip_python_imports = bool()
     static_imports = set()
-    indent = ""
-
-    NULL_APPENDABLE = None
+    indent = str()
 
     def __init__(self, builder):
         self.file_comment = builder.file_comment.build()
@@ -24,40 +22,43 @@ class PythonFile:
         self.indent = builder.indent
 
     @staticmethod
-    def builder(package_name, type_spec):  # done
-        Util.check_not_null(package_name, "package_name == null")
-        Util.check_not_null(type_spec, "type_spec == null")
+    def builder(package_name, type_spec):
+        # Util.check_not_null(package_name, "package_name == null")
+        # Util.check_not_null(type_spec, "type_spec == null")
         builder = Builder(package_name, type_spec)
         return builder
 
-    def write_to(self):
-        writer = open("Controller.py", 'w')
-
-        import_collector = CodeWriter(PythonFile.NULL_APPENDABLE, self.indent, self.static_imports, None)
+    def write_to(self, writer):
+        # First pass: emit the entire class, just to collect the types we'll need to import.
+        import_collector = CodeWriter(writer, self.indent, self.static_imports, None)
         self.emit(import_collector)
         suggested_imports = import_collector.suggested_imports()
+        # Second pass: write the code, taking advantage of the imports.
         code_writer = CodeWriter(writer, self.indent, self.static_imports, suggested_imports)
         self.emit(code_writer)
 
-        writer.close()
-
     def emit(self, code_writer):
         code_writer.push_package(self.package_name)
-        if not (self.file_comment.is_empty()):
+
+        if self.file_comment:
             code_writer.emit_comment(self.file_comment)
-        if not self.package_name:
-            code_writer.emit("package $L\n", self.package_name)
+
+        if self.package_name:
+            code_writer.emit("package $L;\n", self.package_name)
             code_writer.emit("\n")
-        if not self.static_imports:
+
+        if self.static_imports:
             for signature in self.static_imports:
-                code_writer.emit("import static $L\n", signature)
+                code_writer.emit("import static $L;\n", signature)
             code_writer.emit("\n")
 
         imported_types_count = 0
         for class_name in code_writer.imported_types.values():
-            if self.skip_python_imports and class_name.package_name().equals("java.lang"):  # need to be fix
+            # if (skipJavaLangImports && className.packageName().equals("java.lang")
+            #                         && !alwaysQualify.contains(className.simpleName))
+            if self.skip_python_imports:
                 continue
-            code_writer.emit("import $L\n", class_name.without_annotations())
+            code_writer.emit("import $L;\n", class_name.without_annotations())
             imported_types_count += 1
 
         if imported_types_count > 0:
@@ -69,17 +70,29 @@ class PythonFile:
 
 
 class Builder:
-    package_name = ''
+    package_name = str()
     type_spec = TypeSpec
     file_comment = CodeBlock.builder()
     static_imports = set()
-    skip_python_imports = bool
+    skip_python_imports = bool()
     indent = "  "
 
     def __init__(self, package_name, type_spec):
         self.package_name = package_name
         self.type_spec = type_spec
 
-    def build(self):  # done
+    def indent_(self, indent):
+        self.indent = indent
+        return self
+
+    def skip_python_imports_(self, skip_python_imports):
+        self.skip_python_imports = skip_python_imports
+        return self
+
+    def add_file_comment(self, format1, *args):
+        self.file_comment.add(format1, args)
+        return self
+
+    def build(self):
         python_file = PythonFile(self)
         return python_file

@@ -1,3 +1,5 @@
+from multipledispatch import dispatch
+from ParameterSpec import ParameterSpec
 from Util import Util
 
 
@@ -7,7 +9,7 @@ class CodeBlock:
         self.args = builder.args  # self.args = Util.immutable_list(builder.args)
 
     @staticmethod
-    def builder():  # done
+    def builder():
         builder = Builder()
         return builder
 
@@ -19,16 +21,17 @@ class CodeBlock:
     def is_empty(self):
         return not self.format_parts
 
-    def of(self, format, args):
+    @staticmethod
+    def of(format1, args):
         builder = Builder()
-        return builder.add(format, args).build()
+        return builder.add(format1, args).build()
 
 
 class Builder:
     format_parts = list()
     args = list()
 
-    def build(self):  # done
+    def build(self):
         codeblock = CodeBlock(self)
         return codeblock
 
@@ -36,8 +39,132 @@ class Builder:
         self.args.append(url)
         return self
 
-    def add_statement(self, code_block):
+    @dispatch(str, list)
+    def add_statement(self, format1, *args):
+        self.add("$[")
+        self.add(format1, args)
+        self.add(";\n$]")
         return self
 
-    def add(self, format, args):
+    @dispatch(CodeBlock)
+    def add_statement(self, code_block):
+        return self.add_statement("$L", code_block)
+
+    # Add code with positional or relative arguments.
+    #
+    # <p>Relative arguments map 1:1 with the placeholders in the format string.
+    #
+    # <p>Positional arguments use an index after the placeholder to identify which argument index
+    # to use. For example, for a literal to reference the 3rd arguments: "$3L" (1 based index)
+    #
+    # <p>Mixing relative and positional arguments in a call to add is invalid and will result in an error.
+    def add(self, format1, *args):
+        # has_relative = False
+        has_indexed = False
+
+        relative_parameter_count = 0
+        indexed_parameter_count = []
+
+        p = 0
+        while p < len(format1):
+            if format1[p] != '$':
+                try:
+                    nextp = format1.index('$', p + 1)
+                except ValueError:
+                    nextp = len(format1)
+                self.format_parts.append(format1[p:nextp])
+                p = nextp
+                continue
+
+            p += 1
+
+            # Consume zero or more digits, leaving 'c' as the first non-digit char after the '$'.
+            index_start = p
+            while True:
+                if p < len(format1):
+                    c = format1[p]
+                    p += 1
+                    if not ('0' <= c <= '9'):
+                        break
+            index_end = p - 1
+
+            # If 'c' doesn't take an argument, we're done.
+            if self.is_no_arg_placeholder(c):
+                # Util.check_argument()
+                self.format_parts.append("$" + c)
+                continue
+
+            # Find either the indexed argument, or the relative argument. (0-based).
+            index = int()
+            if index_start < index_end:
+                index = int(format1[index_start:index_end - 1])
+                has_indexed = True
+                if len(args) > 0:
+                    indexed_parameter_count[index % len(args)] += 1  # modulo is needed, checked below anyway
+                else:
+                    index = relative_parameter_count
+                    has_relative = True
+                    relative_parameter_count += 1
+
+            # Util.check_argument()
+            # Util.check_argument()
+            self.add_argument(format1, c, args[index])
+
+            self.format_parts.append("$" + c)
+
+            # if has_relative:
+            #     Util.check_argument()
+        if has_indexed:
+            unused = list()
+            for i in range(0, len(args)):
+                if indexed_parameter_count[i] == 0:
+                    unused.append("$" + str(i + 1))
+                if len(unused) == 1:
+                    s = ""
+                else:
+                    s = "s"
+                # Util.check_argument()
         return self
+
+    def is_no_arg_placeholder(self, c):
+        return c == '$' or c == '>' or c == '<' or c == '[' or c == ']' or c == 'W' or c == 'Z'
+
+    def add_argument(self, format1, c, arg):
+        if c == 'N':
+            self.args.append(self.arg_to_name(arg))
+        if c == 'L':
+            self.args.append(self.arg_to_literal(arg))
+        if c == 'S':
+            self.args.append(self.arg_to_string(arg))
+        if c == 'T':
+            self.args.append(self.arg_to_type(arg))
+
+    def arg_to_name(self, o):
+        # if (o instanceof CharSequence)
+        #   return o.toString();
+        if isinstance(o, ParameterSpec):
+            return o.name
+        if isinstance(o, FieldSpec):
+            return o.name
+        if isinstance(o, MethodSpec):
+            return o.name
+        if isinstance(o, TypeSpec):
+            return o.name
+        raise Exception('expected name but was ' + o)
+
+    def arg_to_literal(self, o):
+        return o
+
+    def arg_to_string(self, o):
+        if o is not None:
+            return str(o)
+        else:
+            return None
+
+    def arg_to_type(self, o):
+        pass
+        # if (o instanceof TypeName) return (TypeName) o;
+        # if (o instanceof TypeMirror) return TypeName.get((TypeMirror) o);
+        # if (o instanceof Element) return TypeName.get(((Element) o).asType());
+        # if (o instanceof Type) return TypeName.get((Type) o);
+        # raise Exception('expected type but was ' + o)
