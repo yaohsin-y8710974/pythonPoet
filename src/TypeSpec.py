@@ -35,7 +35,7 @@ class TypeSpec:
         code_writer.statement_line = -1
         try:
             if enum_name:
-                code_writer.emit_python_doc(self.pythondoc)
+                # code_writer.emit_python_doc(self.pythondoc)  #########################
                 code_writer.emit_annotations(self.annotations, False)
                 code_writer.emit("$L", enum_name)
                 if self.anonymous_type_arguments.format_parts:
@@ -54,7 +54,7 @@ class TypeSpec:
                 # push an empty type (specifically without nested types) for type-resolution.
                 code_writer.push_type(self)
 
-                code_writer.emit_python_doc(self.pythondoc)
+                # code_writer.emit_python_doc(self.pythondoc)  ##########################
                 code_writer.emit_annotations(self.annotations, False)
 
                 # codeWriter.emitModifiers(modifiers, Util.union(implicitModifiers, kind.asMemberModifiers));
@@ -63,7 +63,8 @@ class TypeSpec:
                 # } else {
                 #   codeWriter.emit("$L $L", kind.name().toLowerCase(Locale.US), name);
                 # }
-                code_writer.emit("class $L", self.name)
+                code_writer.emit("class ")
+                code_writer.emit("$L", self.name)
                 code_writer.emit_type_variables(self.type_variables)
                 # extends_types = list()
                 # implements_types = list()
@@ -98,10 +99,10 @@ class TypeSpec:
 
                 code_writer.pop_type()
 
-                code_writer.emit(" :\n")
+                code_writer.emit(":\n")
 
             code_writer.push_type(self)
-            code_writer.indent_()
+            code_writer.indent_()  # class indent
             first_member = True
             try:
                 for i in iter(self.enum_constants):
@@ -119,7 +120,6 @@ class TypeSpec:
                         code_writer.emit("\n")
             except StopIteration:
                 pass
-
             # Static fields.
             # for (FieldSpec fieldSpec: fieldSpecs) {
             #     if (!fieldSpec.hasModifier(Modifier.STATIC))  continue;
@@ -127,12 +127,11 @@ class TypeSpec:
             #     fieldSpec.emit(codeWriter, kind.implicitFieldModifiers);
             #     firstMember = false;
             # }
-
-            if self.static_block:
-                if not first_member:
-                    code_writer.emit("\n")
-                code_writer.emit(self.static_block)
-                first_member = False
+            # if self.static_block:   #####
+            #     if not first_member:   #####
+            #         code_writer.emit("\n")   #####
+            #     code_writer.emit(self.static_block)    #####
+            #     first_member = False   #####
 
             # Non-static fields.
             # for (FieldSpec fieldSpec: fieldSpecs) {
@@ -143,11 +142,11 @@ class TypeSpec:
             # }
 
             # Initializer block.
-            if self.initializer_block:
-                if not first_member:
-                    code_writer.emit("\n")
-                code_writer.emit(self.initializer_block)
-                first_member = False
+            # if self.initializer_block:     #####
+            #     if not first_member:     #####
+            #         code_writer.emit("\n")     #####
+            #     code_writer.emit(self.initializer_block)     #####
+            #     first_member = False     #####
 
             # Constructors.
             # for (MethodSpec methodSpec: methodSpecs) {
@@ -171,10 +170,10 @@ class TypeSpec:
                 typespec.emit(code_writer, None)
                 first_member = False
 
-            code_writer.unindent_()
+            code_writer.unindent_()  # class unindent
             code_writer.pop_type()
 
-            code_writer.emit("}")
+            # code_writer.emit("\n")
             if not enum_name and not self.anonymous_type_arguments:
                 code_writer.emit("\n")  # If this type isn't also a value, include a trailing newline.
         finally:

@@ -49,7 +49,7 @@ class LineWrapper:
 
     # Emit {@code s}. This may be buffered to permit line wraps to be inserted.
     def append(self, s):
-        # print(s, end='')
+        print(s, end='')
         if self.closed:
             raise Exception('closed')
 

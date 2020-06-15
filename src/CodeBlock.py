@@ -13,8 +13,7 @@ class CodeBlock:
         builder = Builder()
         return builder
 
-    @classmethod
-    def add_url(cls, url):
+    def add_url(self, url):
         builder = Builder().url(url).build()
         return builder
 
@@ -31,6 +30,10 @@ class Builder:
     format_parts = list()
     args = list()
 
+    def __init__(self):
+        self.format_parts = list()
+        self.args = list()
+
     def build(self):
         codeblock = CodeBlock(self)
         return codeblock
@@ -39,7 +42,7 @@ class Builder:
         self.args.append(url)
         return self
 
-    @dispatch(str, list)
+    @dispatch(str, CodeBlock)
     def add_statement(self, format1, *args):
         self.add("$[")
         self.add(format1, args)
@@ -61,7 +64,6 @@ class Builder:
     def add(self, format1, *args):
         # has_relative = False
         has_indexed = False
-
         relative_parameter_count = 0
         indexed_parameter_count = []
 
@@ -114,16 +116,18 @@ class Builder:
 
             # if has_relative:
             #     Util.check_argument()
-        if has_indexed:
-            unused = list()
-            for i in range(0, len(args)):
-                if indexed_parameter_count[i] == 0:
-                    unused.append("$" + str(i + 1))
-                if len(unused) == 1:
-                    s = ""
-                else:
-                    s = "s"
-                # Util.check_argument()
+
+        # if has_indexed:
+        #     unused = list()
+        #     for i in range(0, len(args)):
+        #         if indexed_parameter_count[i] == 0:
+        #             unused.append("$" + str(i + 1))
+        #         if len(unused) == 1:
+        #             s = ""
+        #         else:
+        #             s = "s"
+        #         # Util.check_argument()
+
         return self
 
     def is_no_arg_placeholder(self, c):

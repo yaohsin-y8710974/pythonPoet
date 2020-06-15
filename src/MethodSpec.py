@@ -30,19 +30,20 @@ class MethodSpec:
         return builder
 
     def emit(self, code_writer, enclosing_name):
-        code_writer.emit_python_doc(self.pythondoc)
+        # code_writer.emit_python_doc(self.pythondoc)  ####################
         code_writer.emit_annotations(self.annotations, False)
+        code_writer.emit("def ")
         # code_writer.emit_modifiers(self.modifiers, implicit_modifiers)
 
-        if not self.type_variables:
-            code_writer.emit_type_variables(self.type_variables)
-            code_writer.emit(" ")
+        # if not self.type_variables:
+        #     code_writer.emit_type_variables(self.type_variables)
+        #     code_writer.emit(" ")
 
         # if self.is_constructor():
         #     code_writer.emit("$L($Z", enclosing_name)
         # else:
         #     code_writer.emit("$T $L($Z", self.return_type, self.name)
-        code_writer.emit("$T $L($Z", self.name)  # code_writer.emit("$T $L($Z", self.return_type, self.name)
+        code_writer.emit("$L($Z", self.name)  # code_writer.emit("$T $L($Z", self.return_type, self.name)
 
         first_parameter = True
         for parameter in self.parameters:
@@ -82,11 +83,11 @@ class MethodSpec:
         #    codeWriter.emit("}\n");
         # }
 
-        code_writer.emit(" {\n")
+        code_writer.emit(":\n")
         code_writer.indent_()
         code_writer.emit(self.code)
         code_writer.unindent_()
-        code_writer.emit("}\n")
+        code_writer.emit("\n")
 
     # def is_constructor(self):
     #     return self.name.equals(self.CONSTRUCTOR)
@@ -124,7 +125,7 @@ class Builder:
     def add_statement(self, code_block):
         self.code.add_statement(code_block)
 
-    @dispatch(str, list)
+    @dispatch(str, str)
     def add_statement(self, format1, *args):
         self.code.add_statement(format1, args)
         return self

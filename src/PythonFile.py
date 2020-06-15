@@ -40,16 +40,16 @@ class PythonFile:
     def emit(self, code_writer):
         code_writer.push_package(self.package_name)
 
-        if self.file_comment:
-            code_writer.emit_comment(self.file_comment)
+        # if self.file_comment:  #############
+        #     code_writer.emit_comment(self.file_comment)  ############
 
         if self.package_name:
-            code_writer.emit("package $L;\n", self.package_name)
+            code_writer.emit("from $L import $L\n", self.package_name)
             code_writer.emit("\n")
 
         if self.static_imports:
             for signature in self.static_imports:
-                code_writer.emit("import static $L;\n", signature)
+                code_writer.emit("import static $L\n", signature)
             code_writer.emit("\n")
 
         imported_types_count = 0
@@ -58,7 +58,7 @@ class PythonFile:
             #                         && !alwaysQualify.contains(className.simpleName))
             if self.skip_python_imports:
                 continue
-            code_writer.emit("import $L;\n", class_name.without_annotations())
+            code_writer.emit("import $L\n", class_name.without_annotations())
             imported_types_count += 1
 
         if imported_types_count > 0:
@@ -75,7 +75,7 @@ class Builder:
     file_comment = CodeBlock.builder()
     static_imports = set()
     skip_python_imports = bool()
-    indent = "  "
+    indent = "    "
 
     def __init__(self, package_name, type_spec):
         self.package_name = package_name
