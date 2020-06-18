@@ -32,10 +32,10 @@ class PythonFile:
         # First pass: emit the entire class, just to collect the types we'll need to import.
         import_collector = CodeWriter(writer, self.indent, self.static_imports, None)
         self.emit(import_collector)
-        suggested_imports = import_collector.suggested_imports()
+        # suggested_imports = import_collector.suggested_imports()
         # Second pass: write the code, taking advantage of the imports.
-        code_writer = CodeWriter(writer, self.indent, self.static_imports, suggested_imports)
-        self.emit(code_writer)
+        # code_writer = CodeWriter(writer, self.indent, self.static_imports, suggested_imports)
+        # self.emit(code_writer)
 
     def emit(self, code_writer):
         code_writer.push_package(self.package_name)
@@ -64,8 +64,10 @@ class PythonFile:
         if imported_types_count > 0:
             code_writer.emit("\n")
 
-        self.type_spec.emit(code_writer, None)  # typeSpec.emit(codeWriter, null, Collections.emptySet())
-
+        if self.type_spec:
+            self.type_spec.emit(code_writer, None)  # typeSpec.emit(codeWriter, null, Collections.emptySet())
+        else:
+            TypeSpec.emit_methods(code_writer)  # emit method if TypeSpec is None.
         code_writer.pop_package()
 
 

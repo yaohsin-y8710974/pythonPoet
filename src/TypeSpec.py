@@ -8,6 +8,8 @@ from Util import Util
 
 
 class TypeSpec:
+    methods = list()
+
     def __init__(self, builder):
         self.initializer_block = builder.initializer_block.build()
         self.static_block = builder.static_block.build()
@@ -178,6 +180,16 @@ class TypeSpec:
                 code_writer.emit("\n")  # If this type isn't also a value, include a trailing newline.
         finally:
             code_writer.statement_line = previous_statement_line
+
+    @staticmethod
+    def emit_methods(code_writer):
+        first_member = True
+        for methodspec in TypeSpec.methods:
+            # print(type(methodspec))
+            if not first_member:
+                code_writer.emit("\n")
+            methodspec.emit(code_writer, ' ')
+            first_member = False
 
 
 class Builder:

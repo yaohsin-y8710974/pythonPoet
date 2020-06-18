@@ -121,31 +121,44 @@ class Builder:
         self.annotations.append(AnnotationSpec.builder(annotation).build())
         return self
 
-    @dispatch(CodeBlock)
-    def add_statement(self, code_block):
-        self.code.add_statement(code_block)
-
-    @dispatch(str, str)
     def add_statement(self, format1, *args):
         self.code.add_statement(format1, args)
         return self
 
-    @dispatch(ParameterSpec)
-    def add_parameter(self, parameter_spec):
+    def add_statement__code_block(self, code_block):
+        self.code.add_statement__code_block(code_block)
+        return self
+
+    def add_parameter(self, parameter_name):
+        return self.add_parameter__code_block(ParameterSpec.builder(parameter_name).build())
+
+    def add_parameter__code_block(self, parameter_spec):
         self.parameters.append(parameter_spec)
         return self
 
-    @dispatch(str)
-    def add_parameter(self, name):
-        return self.add_parameter(ParameterSpec.builder(name).build())
-
-    @dispatch(CodeBlock)
-    def add_code(self, code_block):
-        self.code.add(code_block)
-
-    @dispatch(str, str)
     def add_code(self, format1, *args):
         self.code.add(format1, args)
+
+    def add_code__code_block(self, code_block):
+        self.code.add(code_block)
+
+    def begin_control_flow(self, control_flow, *args):
+        self.code.begin_control_flow(control_flow, args)
+        return self
+
+    def begin_control_flow__code_block(self, code_block):
+        return self.begin_control_flow("$L", code_block)
+
+    def next_control_flow(self, control_flow, *args):
+        self.code.next_control_flow(control_flow, args)
+        return self
+
+    def next_control_flow__code_block(self, code_block):
+        return self.next_control_flow("$L", code_block)
+
+    def end_control_flow(self):
+        self.code.end_control_flow()
+        return self
 
     def add_comment(self, format1, *args):
         self.code.add("# " + format1 + "\n", args)

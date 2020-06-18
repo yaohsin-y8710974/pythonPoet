@@ -215,7 +215,7 @@ class CodeWriter:
         return self
 
     def emit_wrapping_space(self):
-        self.out.wrapping_space(self.indent_level + 2)
+        # self.out.wrapping_space(self.indent_level + 2)   ##########
         return self
 
     def emit_static_import_member(self, canonical, part):

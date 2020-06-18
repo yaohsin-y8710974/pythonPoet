@@ -16,7 +16,6 @@ class ParameterSpec:
 
     def emit(self, code_writer, varargs):
         code_writer.emit_annotations(self.annotations, True)
-        # no need to handle parameter type in python.
         # if varargs:
         #     TypeName.as_array(self.type1).emit(code_writer, True)
         # else:

@@ -50,18 +50,19 @@ class LineWrapper:
     # Emit {@code s}. This may be buffered to permit line wraps to be inserted.
     def append(self, s):
         print(s, end='')
-        if self.closed:
-            raise Exception('closed')
-
-        if self.next_flush:
-            next_new_line = s.index('\n')
-
-            # If s doesn't cause the current line to cross the limit, buffer it and return. We'll decide
-            # whether or not we have to wrap it later.
-            if next_new_line == -1 and self.column + len(s) <= self.column_limit:
-                self.buffer.append(s)
-                self.column += len(s)
-                return
+        # print("def someMethod__type_of_param1__type_of_param2( component, _self, param1, param2):")
+        # if self.closed:
+        #     raise Exception('closed')
+        #
+        # if self.next_flush:
+        #     next_new_line = s.index('\n')
+        #
+        #     If s doesn't cause the current line to cross the limit, buffer it and return. We'll decide
+        #     whether or not we have to wrap it later.
+        #     if next_new_line == -1 and self.column + len(s) <= self.column_limit:
+        #         self.buffer.append(s)
+        #         self.column += len(s)
+        #         return
         #
         #     # Wrap if appending s would overflow the current line.
         #     wrap = next_new_line == -1 or self.column + next_new_line > self.column_limit

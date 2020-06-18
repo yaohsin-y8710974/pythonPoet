@@ -1,4 +1,5 @@
 from multipledispatch import dispatch
+
 from ParameterSpec import ParameterSpec
 from Util import Util
 
@@ -34,24 +35,9 @@ class Builder:
         self.format_parts = list()
         self.args = list()
 
-    def build(self):
-        codeblock = CodeBlock(self)
-        return codeblock
-
     def url(self, url):
         self.args.append(url)
         return self
-
-    @dispatch(str, CodeBlock)
-    def add_statement(self, format1, *args):
-        self.add("$[")
-        self.add(format1, args)
-        self.add(";\n$]")
-        return self
-
-    @dispatch(CodeBlock)
-    def add_statement(self, code_block):
-        return self.add_statement("$L", code_block)
 
     # Add code with positional or relative arguments.
     #
@@ -172,3 +158,78 @@ class Builder:
         # if (o instanceof Element) return TypeName.get(((Element) o).asType());
         # if (o instanceof Type) return TypeName.get((Type) o);
         # raise Exception('expected type but was ' + o)
+
+    def begin_control_flow(self, control_flow, *args):
+        self.add(control_flow + ":\n", args)
+        self.indent()
+        return self
+
+    def next_control_flow(self, control_flow, *args):
+        self.unindent()
+        self.add(" }" + control_flow + " {\n", args)
+        self.indent()
+        return self
+
+    def end_control_flow(self):
+        self.unindent()
+        # self.add("\n")
+        return self
+
+    def add_statement(self, format1, *args):
+        self.add("$[")
+        self.add(format1, args)
+        self.add("\n$]")
+        return self
+
+    def add_statement__code_block(self, code_block):
+        return self.add_statement("$L", code_block)
+
+    # @dispatch(CodeBlock)
+    # def add(self, code_block):
+    #     self.format_parts.extend(code_block.format_parts)
+    #     self.args.extend(code_block.args)
+    #     return self
+
+    def indent(self):
+        self.format_parts.append("$>")
+        return self
+
+    def unindent(self):
+        self.format_parts.append("$<")
+        return self
+
+    def clear(self):
+        self.format_parts.clear()
+        self.args.clear()
+        return self
+
+    def build(self):
+        codeblock = CodeBlock(self)
+        return codeblock
+
+
+class CodeBlockJoiner:
+    delimiter = str()
+    builder = Builder()
+    first = True
+
+    def __init__(self, delimiter, builder):
+        self.delimiter = delimiter
+        self.builder = builder
+
+    def add(self, code_block):
+        if not self.first:
+            self.builder.add(self.delimiter)
+        self.first = False
+
+        self.builder.add(code_block)
+        return self
+
+    def merge(self, other):
+        other_block = other.builder.build()
+        if other_block:
+            self.add(other_block)
+        return self
+
+    def join(self):
+        return self.builder.build()
