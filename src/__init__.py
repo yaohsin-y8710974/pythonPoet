@@ -33,23 +33,24 @@ controller_writer.close()
 
 print('----------------------------------------------------------')
 
-# methodName = 'someMethod__type_of_param1__type_of_param2'
-# packageName = 'pickle'
-#
-# methodSpec = MethodSpec.method_builder(methodName)\
-#     .add_parameter('component')\
-#     .add_parameter('_self')\
-#     .add_parameter('param1')\
-#     .add_parameter('param2')\
-#     .add_statement('obj = pickle.loads(_self)')\
-#     .add_statement('method = getattr(obj, "someMethod")')\
-#     .add_statement('return pickle.dumps(method(param1, param2))')\
-#     .build()
-#
-# typeSpec = None
-# TypeSpec.methods.append(methodSpec)
-# pythonFile = PythonFile.builder(packageName, typeSpec).build()
-#
-# invoker_writer = open("invoker.py", 'w')
-# pythonFile.write_to(invoker_writer)
-# invoker_writer.close()
+methodName = 'someMethod__type_of_param1__type_of_param2'
+packageName = 'pickle'
+
+methodSpec = MethodSpec.method_builder(methodName)\
+    .add_parameter('component')\
+    .add_parameter('_self')\
+    .add_parameter('param1')\
+    .add_parameter('param2')\
+    .add_statement('obj = pickle.loads(_self)')\
+    .add_statement('method = getattr(obj, "someMethod")')\
+    .add_statement('return pickle.dumps(method(param1, param2))')\
+    .build()
+
+typeSpec = None
+TypeSpec.methods = list()  # clear all methods in TypeSpec.methods
+TypeSpec.methods.append(methodSpec)
+pythonFile = PythonFile.builder(packageName, typeSpec).build()
+
+invoker_writer = open("invoker.py", 'w')
+pythonFile.write_to(invoker_writer)
+invoker_writer.close()

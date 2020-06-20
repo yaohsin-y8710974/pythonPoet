@@ -109,6 +109,9 @@ class Builder:
         # checkNotNull(name, "name == null");
         # checkArgument(name.equals(CONSTRUCTOR) | | SourceVersion.isName(name), "not a valid name: %s", name);
         self.name = method_name
+        self.annotations = list()
+        self.parameters = list()
+        self.code = CodeBlock.builder()
         # this.returnType = name.equals(CONSTRUCTOR) ? null: TypeName.VOID;
 
     @dispatch(AnnotationSpec)
